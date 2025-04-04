@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="todo-container">
+    <header>
+        <div class="menu-container">
+            <div class="menu-button">
+                <span class="material-symbols-rounded">menu</span>
+            </div>
+            <div class="menu-dropdown">
+                <ul>
+                    <li id="theme-toggle">
+                        <span class="material-symbols-rounded">dark_mode</span>
+                        <span>Dark Mode</span>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('logout') }}">
+                            <span class="material-symbols-rounded">logout</span>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <h1>TODONE</h1>
+        <div class="user-info">
+            <p>Hi, {{ username }}</p>
+        </div>
+    </header>
+
+    <main>
+        <div class="tasks-container">
+            <div class="active-tasks">
+                <h2>Tasks</h2>
+                <ul class="task-list">
+                    {% for task in active_tasks %}
+                    <li class="task-item" data-id="{{ task.id }}">
+                        <div class="task-checkbox" onclick="toggleTask({{ task.id }})">
+                            <span class="material-symbols-rounded checkmark">circle</span>
+                        </div>
+                        <div class="task-content" onclick="makeEditable(this)">
+                            <span>{{ task.content }}</span>
+                            <form class="edit-form" action="{{ url_for('update_task', id=task.id) }}" method="POST" style="display: none;">
+                                <input type="text" name="content" value="{{ task.content }}">
+                                <button type="submit" style="display: none;"></button>
+                            </form>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="completed-tasks-container">
+                <div class="completed-header">
+                    <button id="toggle-completed" class="btn-text">
+                        <span class="material-symbols-rounded">expand_more</span>
+                        <span>Completed</span>
+                        <span class="completed-count">{{ completed_tasks|length }}</span>
+                    </button>
+                    {% if completed_tasks %}
+                    <a href="{{ url_for('clear_completed') }}" class="btn-text clear-completed">Clear</a>
+                    {% endif %}
+                </div>
+                
+                <div class="completed-tasks" style="display: none;">
+                    <ul class="task-list">
+                        {% for task in completed_tasks %}
+                        <li class="task-item completed" data-id="{{ task.id }}">
+                            <div class="task-checkbox" onclick="toggleTask({{ task.id }})">
+                                <span class="material-symbols-rounded checkmark checked">check_circle</span>
+                            </div>
+                            <div class="task-content">
+                                <span>{{ task.content }}</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="add-task-button" id="addTaskButton">
+        <span class="material-symbols-rounded">add</span>
+    </div>
+
+    <div class="modal" id="addTaskModal">
+        <div class="modal-content">
+            <form action="{{ url_for('add_task') }}" method="POST">
+                <input type="text" name="content" placeholder="Add a new task..." autofocus>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelTask">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 
